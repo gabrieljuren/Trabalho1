@@ -1,0 +1,149 @@
+
+
+
+      REST CLIENT
+
+using System;
+using System.IO;
+using System.Net;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CsharpRestClient.csharp
+{
+
+    public enum httpVerb
+    {
+        GET,
+        POST,
+        PUT,
+        DELETE
+    }
+
+    class RestClient3
+    {
+        public string endPoint { get; set; }
+        public httpVerb httpMethod { get; set; } 
+
+        public RestClient3 ()
+        {
+            endPoint = string.Empty;
+            httpMethod = httpVerb.GET;
+        }
+
+        public string makeRequest()
+        {
+            string strResponseValue = string.Empty;
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(endPoint);
+
+            request.Method = httpMethod.ToString();
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            {
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new ApplicationException("error code: " + response.StatusCode.ToString());
+
+                }
+
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    if (responseStream != null)
+                    {
+                        using (StreamReader reader = new StreamReader(responseStream))
+                        {
+                            strResponseValue = reader.ReadToEnd();
+                        }
+
+
+                    }
+
+                }
+            }
+            return strResponseValue;
+        }
+
+    }
+}
+
+
+       FORM 1
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace CsharpRestClient.csharp
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void txtResponse_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        #region UI Event Handlers
+        private void cmdGO_Click(object sender, EventArgs e)
+        {
+            RestClient3 rClient = new RestClient3();
+            rClient.endPoint = txtRestURI.Text;
+                 
+            debugOutput("REst Client Created");
+
+            string strResponse = string.Empty;
+
+            strResponse = rClient.makeRequest();
+
+            debugOutput(strResponse);
+        }
+
+        #endregion
+
+        private void debugOutput(string strDebugText)
+        {
+            try
+            {
+                System.Diagnostics.Debug.Write(strDebugText + Environment.NewLine);
+                txtResponse.Text = txtResponse.Text + strDebugText + Environment.NewLine;
+                txtResponse.SelectionStart = txtResponse.TextLength;
+                txtResponse.ScrollToCaret();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Write(ex.Message, ToString() + Environment.NewLine);
+
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
