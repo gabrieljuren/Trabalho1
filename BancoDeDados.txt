@@ -1,0 +1,143 @@
+
+CLIENT:
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+using System.Data.Sql;
+using System.Data.SqlClient;
+using System.Windows.Forms;
+
+namespace ConexaoBD
+{
+    class ConexaoSQL2
+    {
+        SqlConnection cn;
+        SqlCommand cmd;
+        SqlDataReader dr;
+
+        public ConexaoSQL2()
+        {
+            try
+            {
+                cn = new SqlConnection("Data Source=LAPTOP-33RB19ES;Initial Catalog=DataBaseCliente;Integrated Security=True"); //NOME DO MEU BANCO DE DADOS! 
+                cn.Open();
+                MessageBox.Show("Conectado!");
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Não foi conectado!: " + ex.ToString());
+            }
+        }
+
+        
+
+        internal int Registro()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string adicionar(int id, int UserId, string Title, string Body)
+        {
+            string saida = "Se foi adicionado";
+            try
+            {
+                cmd = new SqlCommand("Insert into WebServiceTest (Id, UserId, Title, Body) values (" + id + "," + UserId + ", '" + Title + "', '" + Body + "')", cn);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                saida = "Não se conectou: " + ex.ToString();
+            }
+            return saida;
+        }
+
+        public int Registro(int id)
+
+        {
+            int contador = 0;
+
+            try
+            {
+                cmd = new SqlCommand("Select * from WebServiceTest where Id = " + id + "", cn);
+                dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    contador++;
+                }
+
+                dr.Close();
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show("Não foi bem executado: " + ex.ToString());
+
+            }
+
+            return contador;
+        }
+
+
+
+    }
+
+}
+
+
+
+FORM:
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace ConexaoBD
+{
+    public partial class Form1 : Form
+    {
+        ConexaoSQL2 c = new ConexaoSQL2();
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            ConexaoSQL2 c = new ConexaoSQL2();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (c.Registro(Convert.ToInt32(txtId.Text))==0)
+            {
+                MessageBox.Show(c.adicionar(Convert.ToInt32(txtId.Text), int.Parse(txtUserId.Text), txtTitle.Text, txtBody.Text));
+            }
+
+            else
+            {
+                MessageBox.Show("Ocupado!");
+            }
+
+
+        }
+    }
+}
+
+
+
+
+
+
+
