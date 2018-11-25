@@ -1,0 +1,13 @@
+CREATE PROCEDURE InserirDadosWeb
+@id int, 
+@UserId int,
+@title varchar(MAX),
+@body varchar(MAX)
+
+AS
+BEGIN
+
+	INSERT INTO ConexaoWebService VALUES ( @id, @UserId, @title, @body ) 
+
+
+END
