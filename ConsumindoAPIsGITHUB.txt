@@ -1,0 +1,52 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Net;
+using System.IO;
+
+namespace ConsumindoAPIs
+{
+    public partial class _Default : Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            string endPoint = String.Format("https://jsonplaceholder.typicode.com/posts/1/comments");
+            WebRequest RequestObject = WebRequest.Create(endPoint);
+            RequestObject.Method = "GET";
+            HttpWebResponse responseObject = null;
+            responseObject = (HttpWebResponse)RequestObject.GetResponse();
+
+            string ResultTest = null;
+            using (Stream stream = responseObject.GetResponseStream())
+            {
+                StreamReader Reader = new StreamReader(stream);
+                ResultTest = Reader.ReadToEnd();
+                Reader.Close();
+            }
+
+            string endPoint2 = string.Format("https://jsonplaceholder.typicode.com/posts");
+            WebRequest requestObject2 = WebRequest.Create(endPoint2);
+            requestObject2.Method = "POST";
+            requestObject2.ContentType = "application/json";
+
+            string posData = "{\"title\":\"testedata\",\"body\":\"testbody\",\"userId\":\"50\"}";
+
+            using (var streamWriter = new StreamWriter(requestObject2.GetRequestStream()))
+            {
+                streamWriter.Write(posData);
+                streamWriter.Flush();
+                streamWriter.Close();
+
+                var httpResponse = (HttpWebResponse)requestObject2.GetResponse();
+
+                using(var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    var result2 = streamReader.ReadToEnd();                
+                }
+            }
+        }
+    }
+}
